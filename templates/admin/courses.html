@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการคอร์ส - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📚 จัดการคอร์สเรียน</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← กลับ Dashboard</a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            {% if courses %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ชื่อคอร์ส</th>
+                            <th>วิชา</th>
+                            <th>ระดับชั้น</th>
+                            <th>สาขา</th>
+                            <th>ราคา</th>
+                            <th>ชั่วโมง</th>
+                            <th>สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
+                        <tr>
+                            <td>{{ course.id }}</td>
+                            <td>{{ course.name }}</td>
+                            <td>{{ {'Math': 'คณิตศาสตร์', 'English': 'ภาษาอังกฤษ', 'Science': 'วิทยาศาสตร์'}[course.subject] }}</td>
+                            <td>{{ course.grade_level }}</td>
+                            <td>{{ course.branch.name }}</td>
+                            <td>{{ "%.2f"|format(course.price) }} บาท</td>
+                            <td>{{ course.total_hours }} ชม.</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if course.is_active else 'danger' }}">
+                                    {{ 'เปิดสอน' if course.is_active else 'ปิดสอน' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center">ยังไม่มีคอร์สเรียนในระบบ</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}ลงทะเบียนเรียน - โรงเรียนติวเด็กประถม{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">📝 ลงทะเบียนเรียน</h4>
+                </div>
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <h5>{{ course.name }}</h5>
+                        <p class="text-muted mb-0">
+                            {{ {'Math': 'คณิตศาสตร์', 'English': 'ภาษาอังกฤษ', 'Science': 'วิทยาศาสตร์'}[course.subject] }} | 
+                            ระดับ {{ course.grade_level }} | 
+                            {{ course.total_hours }} ชั่วโมง | 
+                            {{ "%.2f"|format(course.price) }} บาท
+                        </p>
+                    </div>
+                    
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="student_id" class="form-label">เลือกนักเรียน</label>
+                            <select class="form-select" id="student_id" name="student_id" required>
+                                <option value="">-- เลือกนักเรียน --</option>
+                                {% for student in students %}
+                                <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }} ({{ student.grade_level }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="class_id" class="form-label">เลือกตารางเรียน</label>
+                            <select class="form-select" id="class_id" name="class_id" required>
+                                <option value="">-- เลือกตารางเรียน --</option>
+                                {% for class in classes %}
+                                <option value="{{ class.id }}">
+                                    {{ ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์', 'วันอาทิตย์'][loop.index0 % 7] }} 
+                                    {{ class.start_time.strftime('%H:%M') }} - {{ class.end_time.strftime('%H:%M') }}
+                                    {% if class.room_number %} (ห้อง {{ class.room_number }}){% endif %}
+                                </option>
+                                {% else %}
+                                <option disabled>ยังไม่มีตารางเรียนสำหรับคอร์สนี้</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>💡 หมายเหตุ:</strong> หลังจากลงทะเบียนแล้ว ท่านจะต้องทำการชำระเงินเพื่อยืนยันการสมัครเรียน
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">ลงทะเบียนเรียน</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

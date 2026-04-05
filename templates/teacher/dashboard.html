@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard - โรงเรียนติวเด็กประถม{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">👨‍🏫 Teacher Dashboard</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>ข้อมูลครู</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>ชื่อ:</strong> {{ teacher.first_name }} {{ teacher.last_name }}</p>
+            <p><strong>วิชาเชี่ยวชาญ:</strong> {{ teacher.specialization or '-' }}</p>
+            <p><strong>เบอร์โทร:</strong> {{ teacher.phone or '-' }}</p>
+        </div>
+    </div>
+
+    {% if classes %}
+    <div class="card">
+        <div class="card-header">
+            <h4>📅 ตารางสอนของคุณ</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>คอร์ส</th>
+                            <th>วัน</th>
+                            <th>เวลา</th>
+                            <th>ห้อง</th>
+                            <th>สาขา</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for class in classes %}
+                        <tr>
+                            <td>{{ class.course.name }}</td>
+                            <td>{{ ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์', 'วันอาทิตย์'][['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].index(class.day_of_week)] }}</td>
+                            <td>{{ class.start_time.strftime('%H:%M') }} - {{ class.end_time.strftime('%H:%M') }}</td>
+                            <td>{{ class.room_number or '-' }}</td>
+                            <td>{{ class.branch.name }}</td>
+                            <td>
+                                <a href="{{ url_for('take_attendance', class_id=class.id) }}" class="btn btn-sm btn-primary">✓ เช็คชื่อ</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">ยังไม่มีตารางสอนที่กำหนด</div>
+    {% endif %}
+</div>
+{% endblock %}

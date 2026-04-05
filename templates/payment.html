@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}ชำระเงิน - โรงเรียนติวเด็กประถม{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">💳 ชำระเงิน</h4>
+                </div>
+                <div class="card-body p-5">
+                    <div class="alert alert-info mb-4">
+                        <h5>ข้อมูลการชำระเงิน</h5>
+                        <p class="mb-1"><strong>คอร์ส:</strong> {{ enrollment.course.name }}</p>
+                        <p class="mb-1"><strong>นักเรียน:</strong> {{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</p>
+                        <p class="mb-0"><strong>จำนวนเงิน:</strong> <span class="text-danger h4">{{ "%.2f"|format(enrollment.course.price) }} บาท</span></p>
+                    </div>
+                    
+                    <div class="card mb-4 bg-light">
+                        <div class="card-body">
+                            <h5>🏦 ข้อมูลบัญชีธนาคาร</h5>
+                            <p class="mb-1"><strong>ธนาคาร:</strong> ธนาคารกสิกรไทย</p>
+                            <p class="mb-1"><strong>ชื่อบัญชี:</strong> โรงเรียนติวเด็กประถม</p>
+                            <p class="mb-1"><strong>เลขที่บัญชี:</strong> 123-4-56789-0</p>
+                            <p class="mb-0"><strong>หรือสแกน QR Code:</strong> พร้อมเพย์</p>
+                        </div>
+                    </div>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">จำนวนเงินที่โอน</label>
+                            <input type="number" step="0.01" class="form-control" id="amount" name="amount" value="{{ enrollment.course.price }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">วิธีการชำระเงิน</label>
+                            <select class="form-select" id="payment_method" name="payment_method" required>
+                                <option value="bank_transfer">โอนเงินผ่านธนาคาร</option>
+                                <option value="qrcode">QR Code / พร้อมเพย์</option>
+                                <option value="online">Online Payment</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="transfer_date" class="form-label">วันที่และเวลาโอน</label>
+                            <input type="datetime-local" class="form-control" id="transfer_date" name="transfer_date" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="slip" class="form-label">อัปโหลดสลิปการโอนเงิน</label>
+                            <input type="file" class="form-control" id="slip" name="slip" accept="image/*" required>
+                            <div class="form-text">รองรับไฟล์รูปภาพ (JPG, PNG)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">หมายเหตุ (ถ้ามี)</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">ยืนยันการชำระเงิน</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

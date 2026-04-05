@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการสาขา - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🏫 จัดการสาขา</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← กลับ Dashboard</a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            {% if branches %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ชื่อสาขา</th>
+                            <th>ที่อยู่</th>
+                            <th>เบอร์โทร</th>
+                            <th>เวลาเปิด-ปิด</th>
+                            <th>สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for branch in branches %}
+                        <tr>
+                            <td>{{ branch.id }}</td>
+                            <td>{{ branch.name }}</td>
+                            <td>{{ branch.address or '-' }}</td>
+                            <td>{{ branch.phone or '-' }}</td>
+                            <td>{{ branch.opening_hours or '-' }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if branch.is_active else 'danger' }}">
+                                    {{ 'เปิดทำการ' if branch.is_active else 'ปิดทำการ' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center">ยังไม่มีสาขาในระบบ</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}คอร์สเรียน - โรงเรียนติวเด็กประถม{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">📚 คอร์สเรียนทั้งหมด</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="branch_id" class="form-label">สาขา</label>
+                    <select class="form-select" id="branch_id" name="branch_id">
+                        <option value="">ทุกสาขา</option>
+                        {% for branch in branches %}
+                        <option value="{{ branch.id }}">{{ branch.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="grade_level" class="form-label">ระดับชั้น</label>
+                    <select class="form-select" id="grade_level" name="grade_level">
+                        <option value="">ทุกระดับ</option>
+                        <option value="ป.1">ป.1</option>
+                        <option value="ป.2">ป.2</option>
+                        <option value="ป.3">ป.3</option>
+                        <option value="ป.4">ป.4</option>
+                        <option value="ป.5">ป.5</option>
+                        <option value="ป.6">ป.6</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="subject" class="form-label">วิชา</label>
+                    <select class="form-select" id="subject" name="subject">
+                        <option value="">ทุกวิชา</option>
+                        <option value="Math">คณิตศาสตร์</option>
+                        <option value="English">ภาษาอังกฤษ</option>
+                        <option value="Science">วิทยาศาสตร์</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">กรอง</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <span class="badge bg-{{ 'primary' if course.subject == 'Math' else 'success' if course.subject == 'English' else 'info' }} mb-2">
+                        {{ {'Math': 'คณิตศาสตร์', 'English': 'ภาษาอังกฤษ', 'Science': 'วิทยาศาสตร์'}[course.subject] }}
+                    </span>
+                    <h5 class="card-title">{{ course.name }}</h5>
+                    <p class="card-text">
+                        <strong>ระดับชั้น:</strong> {{ course.grade_level }}<br>
+                        <strong>จำนวนชั่วโมง:</strong> {{ course.total_hours }} ชม.<br>
+                        <strong>ราคา:</strong> {{ "%.2f"|format(course.price) }} บาท
+                    </p>
+                    {% if course.description %}
+                    <p class="card-text small text-muted">{{ course.description }}</p>
+                    {% endif %}
+                    <a href="{{ url_for('enroll', course_id=course.id) }}" class="btn btn-primary w-100">ลงทะเบียนเรียน</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">ยังไม่มีคอร์สเรียนในขณะนี้</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
