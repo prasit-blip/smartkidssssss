@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - โรงเรียนติวเด็กประถม{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <h2 class="mb-4">👨‍💼 Admin Dashboard</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ total_students }}</h3>
+                    <p class="mb-0">นักเรียนทั้งหมด</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ total_parents }}</h3>
+                    <p class="mb-0">ผู้ปกครอง</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>{{ total_teachers }}</h3>
+                    <p class="mb-0">ครูผู้สอน</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h3>{{ total_courses }}</h3>
+                    <p class="mb-0">คอร์สเรียน</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h3>{{ "%.2f"|format(total_revenue) }} บาท</h3>
+                    <p class="mb-0">รายได้รวม (ที่อนุมัติแล้ว)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">💳 การชำระเงินที่รอตรวจสอบ ({{ pending_payments|length }})</h5>
+                    <a href="{{ url_for('admin_payments') }}" class="btn btn-sm btn-primary">ดูทั้งหมด</a>
+                </div>
+                <div class="card-body">
+                    {% if pending_payments %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>ผู้ชำระ</th>
+                                    <th>จำนวนเงิน</th>
+                                    <th>วันที่โอน</th>
+                                    <th>จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in pending_payments[:5] %}
+                                <tr>
+                                    <td>{{ payment.parent.first_name }} {{ payment.parent.last_name }}</td>
+                                    <td>{{ "%.2f"|format(payment.amount) }}</td>
+                                    <td>{{ payment.transfer_date.strftime('%d/%m/%Y %H:%M') if payment.transfer_date else '-' }}</td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('approve_payment', payment_id=payment.id) }}" class="d-inline">
+                                            <button type="submit" name="action" value="approve" class="btn btn-sm btn-success">✓</button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('approve_payment', payment_id=payment.id) }}" class="d-inline">
+                                            <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger">✗</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">ไม่มีรายการที่รอตรวจสอบ</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📝 รายการลงทะเบียนล่าสุด</h5>
+                    <a href="{{ url_for('admin_students') }}" class="btn btn-sm btn-primary">ดูทั้งหมด</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_enrollments %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>นักเรียน</th>
+                                    <th>คอร์ส</th>
+                                    <th>สถานะ</th>
+                                    <th>วันที่</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in recent_enrollments[:5] %}
+                                <tr>
+                                    <td>{{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</td>
+                                    <td>{{ enrollment.course.name }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if enrollment.status == 'approved' else 'warning' }}">{{ enrollment.status }}</span>
+                                    </td>
+                                    <td>{{ enrollment.enrolled_at.strftime('%d/%m/%Y') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">ยังไม่มีรายการลงทะเบียน</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">⚡ จัดการระบบ</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('admin_students') }}" class="btn btn-outline-primary w-100">👶 จัดการนักเรียน</a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('admin_teachers') }}" class="btn btn-outline-success w-100">👨‍🏫 จัดการครู</a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('admin_courses') }}" class="btn btn-outline-info w-100">📚 จัดการคอร์ส</a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('admin_branches') }}" class="btn btn-outline-warning w-100">🏫 จัดการสาขา</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

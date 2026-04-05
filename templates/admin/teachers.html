@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการครู - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>👨‍🏫 จัดการครู</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← กลับ Dashboard</a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            {% if teachers %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>อีเมล</th>
+                            <th>เบอร์โทร</th>
+                            <th>วิชาเชี่ยวชาญ</th>
+                            <th>วันที่สมัคร</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for teacher in teachers %}
+                        <tr>
+                            <td>{{ teacher.id }}</td>
+                            <td>{{ teacher.first_name }} {{ teacher.last_name }}</td>
+                            <td>{{ teacher.user.email }}</td>
+                            <td>{{ teacher.phone or '-' }}</td>
+                            <td>{{ teacher.specialization or '-' }}</td>
+                            <td>{{ teacher.created_at.strftime('%d/%m/%Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center">ยังไม่มีครูในระบบ</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการการชำระเงิน - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>💳 จัดการการชำระเงิน</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← กลับ Dashboard</a>
+    </div>
+    
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link {{ 'active' if status_filter == 'pending' else '' }}" href="{{ url_for('admin_payments', status='pending') }}">รอตรวจสอบ ({{ Payment.query.filter_by(status='pending').count() }})</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ 'active' if status_filter == 'approved' else '' }}" href="{{ url_for('admin_payments', status='approved') }}">อนุมัติแล้ว ({{ Payment.query.filter_by(status='approved').count() }})</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ 'active' if status_filter == 'rejected' else '' }}" href="{{ url_for('admin_payments', status='rejected') }}">ถูกปฏิเสธ ({{ Payment.query.filter_by(status='rejected').count() }})</a>
+        </li>
+    </ul>
+    
+    <div class="card">
+        <div class="card-body">
+            {% if payments %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ผู้ปกครอง</th>
+                            <th>นักเรียน</th>
+                            <th>คอร์ส</th>
+                            <th>จำนวนเงิน</th>
+                            <th>วิธีชำระ</th>
+                            <th>วันที่โอน</th>
+                            <th>สลิป</th>
+                            <th>สถานะ</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.id }}</td>
+                            <td>{{ payment.parent.first_name }} {{ payment.parent.last_name }}</td>
+                            <td>{{ payment.enrollment.student.first_name }} {{ payment.enrollment.student.last_name }}</td>
+                            <td>{{ payment.enrollment.course.name }}</td>
+                            <td>{{ "%.2f"|format(payment.amount) }} บาท</td>
+                            <td>{{ {'bank_transfer': 'โอนเงิน', 'qrcode': 'QR Code', 'online': 'ออนไลน์'}[payment.payment_method] }}</td>
+                            <td>{{ payment.transfer_date.strftime('%d/%m/%Y %H:%M') if payment.transfer_date else '-' }}</td>
+                            <td>
+                                {% if payment.slip_filename %}
+                                    <a href="{{ url_for('static', filename='uploads/' + payment.slip_filename) }}" target="_blank" class="btn btn-sm btn-info">ดูสลิป</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'warning' if payment.status == 'pending' else 'success' if payment.status == 'approved' else 'danger' }}">
+                                    {{ {'pending': 'รอตรวจสอบ', 'approved': 'อนุมัติแล้ว', 'rejected': 'ถูกปฏิเสธ'}[payment.status] }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if payment.status == 'pending' %}
+                                    <form method="POST" action="{{ url_for('approve_payment', payment_id=payment.id) }}" class="d-inline">
+                                        <button type="submit" name="action" value="approve" class="btn btn-sm btn-success">✓ อนุมัติ</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('approve_payment', payment_id=payment.id) }}" class="d-inline">
+                                        <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger">✗ ปฏิเสธ</button>
+                                    </form>
+                                {% else %}
+                                    {{ payment.approver.email if payment.approver else '-' }}<br>
+                                    <small>{{ payment.approved_at.strftime('%d/%m/%Y %H:%M') if payment.approved_at else '-' }}</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center">ไม่มีรายการชำระเงินในหมวดหมู่นี้</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+```
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py~
+*.py.class
+
+# Database
+instance/*.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.env.*
+```

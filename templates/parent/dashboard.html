@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard ผู้ปกครอง - โรงเรียนติวเด็กประถม{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">👨‍👩‍👧 Dashboard ผู้ปกครอง</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <a href="{{ url_for('add_student') }}" class="btn btn-primary">➕ เพิ่มนักเรียน</a>
+            <a href="{{ url_for('courses') }}" class="btn btn-success">📚 ลงทะเบียนเรียน</a>
+        </div>
+    </div>
+
+    {% if students %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>👶 นักเรียนของคุณ</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>โรงเรียน</th>
+                            <th>ระดับชั้น</th>
+                            <th>วันเกิด</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.first_name }} {{ student.last_name }}</td>
+                            <td>{{ student.school or '-' }}</td>
+                            <td>{{ student.grade_level }}</td>
+                            <td>{{ student.date_of_birth.strftime('%d/%m/%Y') if student.date_of_birth else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if enrollments %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>📝 รายการลงทะเบียนเรียน</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>นักเรียน</th>
+                            <th>คอร์ส</th>
+                            <th>สถานะ</th>
+                            <th>วันที่สมัคร</th>
+                            <th>การชำระเงิน</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in enrollments %}
+                        <tr>
+                            <td>{{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</td>
+                            <td>{{ enrollment.course.name }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if enrollment.status == 'approved' else 'warning' if enrollment.status == 'pending' else 'danger' }}">
+                                    {{ {'pending': 'รออนุมัติ', 'approved': 'อนุมัติแล้ว', 'cancelled': 'ยกเลิก'}[enrollment.status] }}
+                                </span>
+                            </td>
+                            <td>{{ enrollment.enrolled_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                {% set payment = enrollment.payments|first if enrollment.payments else None %}
+                                {% if payment %}
+                                    <span class="badge bg-{{ 'success' if payment.status == 'approved' else 'warning' if payment.status == 'pending' else 'danger' }}">
+                                        {{ {'pending': 'รอตรวจสอบ', 'approved': 'อนุมัติแล้ว', 'rejected': 'ถูกปฏิเสธ'}[payment.status] }}
+                                    </span>
+                                {% else %}
+                                    <a href="{{ url_for('make_payment', enrollment_id=enrollment.id) }}" class="btn btn-sm btn-primary">ชำระเงิน</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if payments %}
+    <div class="card">
+        <div class="card-header">
+            <h4>💳 ประวัติการชำระเงิน</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>จำนวนเงิน</th>
+                            <th>วิธีการชำระ</th>
+                            <th>สถานะ</th>
+                            <th>วันที่โอน</th>
+                            <th>วันที่อนุมัติ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>{{ "%.2f"|format(payment.amount) }} บาท</td>
+                            <td>{{ {'bank_transfer': 'โอนเงิน', 'qrcode': 'QR Code', 'online': 'ออนไลน์'}[payment.payment_method] }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if payment.status == 'approved' else 'warning' if payment.status == 'pending' else 'danger' }}">
+                                    {{ {'pending': 'รอตรวจสอบ', 'approved': 'อนุมัติแล้ว', 'rejected': 'ถูกปฏิเสธ'}[payment.status] }}
+                                </span>
+                            </td>
+                            <td>{{ payment.transfer_date.strftime('%d/%m/%Y %H:%M') if payment.transfer_date else '-' }}</td>
+                            <td>{{ payment.approved_at.strftime('%d/%m/%Y %H:%M') if payment.approved_at else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

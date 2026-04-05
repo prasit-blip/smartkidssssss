@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 mb-4">🎓 ยินดีต้อนรับสู่โรงเรียนติวเด็กประถม</h1>
+        <p class="lead mb-4">พัฒนาการเรียนรู้ของบุตรหลานคุณกับครูผู้เชี่ยวชาญ</p>
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('register') }}" class="btn btn-light btn-lg me-2">สมัครสมาชิก</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">เข้าสู่ระบบ</a>
+        {% else %}
+            <a href="{{ url_for('courses') }}" class="btn btn-light btn-lg">ดูคอร์สเรียน</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container my-5">
+    <h2 class="text-center mb-5">🌟 ฟีเจอร์หลักของเรา</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card feature-card h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">📚 คอร์สเรียนหลากหลาย</h3>
+                    <p class="card-text">คณิตศาสตร์, อังกฤษ, วิทยาศาสตร์ สำหรับ ป.1-ป.6</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card feature-card h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">💳 ชำระเงินง่าย</h3>
+                    <p class="card-text">โอนเงิน, QR Code, พร้อมระบบตรวจสอบสลิปอัตโนมัติ</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card feature-card h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">📊 ติดตามผลการเรียน</h3>
+                    <p class="card-text">ผู้ปกครองสามารถดูคะแนนและพัฒนาการของนักเรียนได้ตลอดเวลา</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if branches %}
+<div class="container my-5">
+    <h2 class="text-center mb-5">🏫 สาขาของเรา</h2>
+    <div class="row">
+        {% for branch in branches %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ branch.name }}</h5>
+                    <p class="card-text">
+                        <strong>ที่อยู่:</strong> {{ branch.address }}<br>
+                        <strong>เบอร์โทร:</strong> {{ branch.phone }}<br>
+                        <strong>เวลาเปิด-ปิด:</strong> {{ branch.opening_hours }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if news %}
+<div class="container my-5">
+    <h2 class="text-center mb-5">📰 ข่าวสารล่าสุด</h2>
+    <div class="row">
+        {% for item in news %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.title }}</h5>
+                    <p class="card-text">{{ item.content[:150] }}...</p>
+                    <small class="text-muted">{{ item.published_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

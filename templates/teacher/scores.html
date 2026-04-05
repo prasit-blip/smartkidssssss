@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}บันทึกคะแนน - Teacher{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📊 บันทึกคะแนนนักเรียน</h2>
+        <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">← กลับ</a>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">{{ student.first_name }} {{ student.last_name }}</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-1"><strong>ระดับชั้น:</strong> {{ student.grade_level }}</p>
+            <p class="mb-0"><strong>โรงเรียน:</strong> {{ student.school or '-' }}</p>
+        </div>
+    </div>
+    
+    <form method="POST">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="course_id" class="form-label">คอร์ส</label>
+                        <select class="form-select" id="course_id" name="course_id" required>
+                            <option value="">-- เลือกคอร์ส --</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }} ({{ course.grade_level }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="test_name" class="form-label">ชื่อแบบทดสอบ/การบ้าน</label>
+                        <input type="text" class="form-control" id="test_name" name="test_name" placeholder="เช่น แบบทดสอบบทที่ 1" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="score_value" class="form-label">คะแนนที่ได้</label>
+                        <input type="number" step="0.5" class="form-control" id="score_value" name="score_value" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="max_score" class="form-label">คะแนนเต็ม</label>
+                        <input type="number" step="0.5" class="form-control" id="max_score" name="max_score" value="100">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="test_date" class="form-label">วันที่สอบ</label>
+                        <input type="date" class="form-control" id="test_date" name="test_date">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="notes" class="form-label">หมายเหตุ</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="ความคิดเห็นเพิ่มเติม"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100">บันทึกคะแนน</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

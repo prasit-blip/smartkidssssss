@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}เพิ่มนักเรียน - โรงเรียนติวเด็กประถม{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">➕ เพิ่มนักเรียน</h2>
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">ชื่อ</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">นามสกุล</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="school" class="form-label">โรงเรียน</label>
+                            <input type="text" class="form-control" id="school" name="school">
+                        </div>
+                        <div class="mb-3">
+                            <label for="grade_level" class="form-label">ระดับชั้น</label>
+                            <select class="form-select" id="grade_level" name="grade_level" required>
+                                <option value="">-- เลือกชั้น --</option>
+                                <option value="ป.1">ป.1</option>
+                                <option value="ป.2">ป.2</option>
+                                <option value="ป.3">ป.3</option>
+                                <option value="ป.4">ป.4</option>
+                                <option value="ป.5">ป.5</option>
+                                <option value="ป.6">ป.6</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date_of_birth" class="form-label">วันเกิด</label>
+                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">บันทึกข้อมูล</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

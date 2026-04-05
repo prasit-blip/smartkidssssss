@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}เช็คชื่อ - Teacher{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>✓ เช็คชื่อนักเรียน</h2>
+        <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">← กลับ</a>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">{{ class_.course.name }}</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-1"><strong>วัน:</strong> {{ ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์', 'วันอาทิตย์'][['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].index(class_.day_of_week)] }}</p>
+            <p class="mb-1"><strong>เวลา:</strong> {{ class_.start_time.strftime('%H:%M') }} - {{ class_.end_time.strftime('%H:%M') }}</p>
+            <p class="mb-0"><strong>ห้อง:</strong> {{ class_.room_number or '-' }}</p>
+        </div>
+    </div>
+    
+    <form method="POST">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="attendance_date" class="form-label fw-bold">วันที่เช็คชื่อ</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="date" class="form-control" id="attendance_date" name="attendance_date" value="{{ now.strftime('%Y-%m-%d') if now else '' }}" required>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if enrollments %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>นักเรียน</th>
+                                <th>ระดับชั้น</th>
+                                <th>สถานะ</th>
+                                <th>หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for enrollment in enrollments %}
+                            <tr>
+                                <td>{{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</td>
+                                <td>{{ enrollment.student.grade_level }}</td>
+                                <td>
+                                    <select class="form-select form-select-sm" name="status_{{ enrollment.student.id }}" required style="width: 150px;">
+                                        <option value="present">✓ มาเรียน</option>
+                                        <option value="absent">✗ ขาด</option>
+                                        <option value="late">⏰ สาย</option>
+                                        <option value="leave">📝 ลา</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" name="notes_{{ enrollment.student.id }}" placeholder="หมายเหตุ">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit" class="btn btn-success w-100 mt-3">บันทึกการเช็คชื่อ</button>
+                {% else %}
+                <p class="text-muted text-center">ยังไม่มีนักเรียนลงทะเบียนในคลาสนี้</p>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('attendance_date');
+    if (!dateInput.value) {
+        dateInput.value = today;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการนักเรียน - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>👶 จัดการนักเรียน</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← กลับ Dashboard</a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            {% if students %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>ผู้ปกครอง</th>
+                            <th>โรงเรียน</th>
+                            <th>ระดับชั้น</th>
+                            <th>วันเกิด</th>
+                            <th>วันที่สมัคร</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.id }}</td>
+                            <td>{{ student.first_name }} {{ student.last_name }}</td>
+                            <td>{{ student.parent.first_name }} {{ student.parent.last_name }}</td>
+                            <td>{{ student.school or '-' }}</td>
+                            <td>{{ student.grade_level }}</td>
+                            <td>{{ student.date_of_birth.strftime('%d/%m/%Y') if student.date_of_birth else '-' }}</td>
+                            <td>{{ student.created_at.strftime('%d/%m/%Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center">ยังไม่มีนักเรียนในระบบ</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
